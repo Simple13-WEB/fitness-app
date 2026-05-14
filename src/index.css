@@ -1,0 +1,96 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  @apply bg-surface-page text-text-primary antialiased;
+  overscroll-behavior: none;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* ===== Exercise Animations ===== */
+
+/* Push: bench press — arms extend upward from chest */
+@keyframes bench-press {
+  0%, 100% { transform: translateY(0); }
+  40% { transform: translateY(-12px); }
+  55% { transform: translateY(-12px); }
+}
+
+/* Pull: lat pulldown / pull-up — arms pull down from overhead */
+@keyframes pull-down {
+  0%, 100% { transform: translateY(0); }
+  40% { transform: translateY(8px); }
+  55% { transform: translateY(8px); }
+}
+
+/* Squat: body descends and rises */
+@keyframes squat-move {
+  0%, 100% { transform: translateY(0) scaleY(1); }
+  50% { transform: translateY(8px) scaleY(0.84); }
+}
+
+/* Raise: shoulder press / lateral raise — arms press upward */
+@keyframes shoulder-press {
+  0%, 100% { transform: translateY(0); }
+  40% { transform: translateY(-14px); }
+  55% { transform: translateY(-14px); }
+}
+
+/* Crunch: abs curl — torso rotates forward */
+@keyframes crunch-move {
+  0%, 100% { transform: rotate(0deg); }
+  40% { transform: rotate(-6deg); }
+  55% { transform: rotate(-6deg); }
+}
+
+/* Hip hinge: hip thrust / glute bridge — hips rise upward */
+@keyframes hip-hinge {
+  0%, 100% { transform: translateY(0); }
+  40% { transform: translateY(-10px); }
+  55% { transform: translateY(-10px); }
+}
+
+/* Pulse: glow effect for cardio/isometric exercises */
+@keyframes muscle-glow {
+  0%, 100% { opacity: 0.25; }
+  50% { opacity: 0.65; }
+}
+
+.anim-push   { animation: bench-press 1.8s ease-in-out infinite; }
+.anim-pull   { animation: pull-down 1.6s ease-in-out infinite; }
+.anim-squat  { animation: squat-move 1.5s ease-in-out infinite; }
+.anim-up     { animation: shoulder-press 1.7s ease-in-out infinite; }
+.anim-crunch { animation: crunch-move 1.4s ease-in-out infinite; transform-origin: 100px 160px; }
+.anim-hiphinge { animation: hip-hinge 1.5s ease-in-out infinite; }
+.anim-glow   { animation: muscle-glow 2s ease-in-out infinite; }
+
+/* Swim: gentle undulation for swimming animation */
+@keyframes swim-glide {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+.anim-swim   { animation: swim-glide 1.4s ease-in-out infinite; }
+
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.anim-slide-up { animation: slide-up 0.3s ease-out; }
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.anim-fade-in { animation: fade-in 0.3s ease-out; }
