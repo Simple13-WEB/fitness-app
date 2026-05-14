@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">健身助手</string>
+    <string name="title_activity_main">健身助手</string>
+    <string name="package_name">com.simple13.fitnessapp</string>
+    <string name="custom_url_scheme">com.simple13.fitnessapp</string>
+</resources>
