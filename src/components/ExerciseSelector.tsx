@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { MUSCLE_GROUPS, type MuscleGroup } from '../types'
 import { getExercisesByGroup } from '../data/exercises'
 import type { Exercise } from '../types'
@@ -58,11 +58,11 @@ function ExerciseCarousel({ exercises, onSelect }: { exercises: Exercise[]; onSe
         onClick={() => onSelect(ex)}
         className="flex-1 flex flex-col items-center h-full py-2"
       >
+        <div className="text-center px-2 pb-1.5">
+          <p className="text-[13px] font-bold text-text-primary leading-tight">{ex.name}</p>
+        </div>
         <div className="flex-1 w-full rounded-2xl overflow-hidden bg-surface-subtle">
           <ExerciseAnimation exercise={ex} size="lg" />
-        </div>
-        <div className="py-2 text-center">
-          <p className="text-[13px] font-bold text-text-primary leading-tight">{ex.name}</p>
         </div>
       </button>
 
@@ -82,10 +82,17 @@ function ExerciseCarousel({ exercises, onSelect }: { exercises: Exercise[]; onSe
 export default function ExerciseSelector({ onSelect, onClose, defaultGroup }: Props) {
   const [selectedGroup, setSelectedGroup] = useState<MuscleGroup | null>(defaultGroup || null)
   const [hoveredGroup, setHoveredGroup] = useState<MuscleGroup | null>(null)
+  const [pendingGroup, setPendingGroup] = useState<MuscleGroup | null>(null)
 
-  const isPosterior = hoveredGroup ? POSTERIOR_GROUPS.includes(hoveredGroup) : false
+  // Reset pending group when navigating back to step 1
+  useEffect(() => {
+    if (selectedGroup) setPendingGroup(null)
+  }, [selectedGroup])
+
+  const activeGroup = pendingGroup || hoveredGroup
+  const isPosterior = activeGroup ? POSTERIOR_GROUPS.includes(activeGroup) : false
   const showZones = isPosterior ? posteriorZones : anteriorZones
-  const diagramHighlight = hoveredGroup
+  const diagramHighlight = activeGroup
 
   // Step 1: body diagram
   if (!selectedGroup) {
@@ -106,12 +113,15 @@ export default function ExerciseSelector({ onSelect, onClose, defaultGroup }: Pr
                 <button
                   key={group.key}
                   type="button"
-                  onClick={() => setSelectedGroup(group.key)}
-                  onMouseEnter={() => setHoveredGroup(group.key)}
-                  onMouseLeave={() => setHoveredGroup(null)}
+                  onClick={() => {
+                    setPendingGroup(group.key)
+                    setTimeout(() => setSelectedGroup(group.key), 200)
+                  }}
+                  onMouseEnter={() => { setHoveredGroup(group.key); setPendingGroup(group.key) }}
+                  onMouseLeave={() => { setHoveredGroup(null); setPendingGroup(null) }}
                   style={{ outline: 'none' }}
                   className={`px-4 py-2 rounded-full text-[13px] font-bold transition-all focus:outline-none ${
-                    hoveredGroup === group.key
+                    (pendingGroup || hoveredGroup) === group.key
                       ? 'bg-brand text-white shadow-md scale-105'
                       : 'bg-surface-subtle text-text-primary hover:bg-surface-muted'
                   }`}
@@ -133,8 +143,12 @@ export default function ExerciseSelector({ onSelect, onClose, defaultGroup }: Pr
                     key={z.key}
                     role="button"
                     tabIndex={0}
-                    onMouseEnter={() => setHoveredGroup(z.key)}
-                    onClick={() => setSelectedGroup(z.key)}
+                    onMouseEnter={() => { setHoveredGroup(z.key); setPendingGroup(z.key) }}
+                    onMouseLeave={() => { setHoveredGroup(null); setPendingGroup(null) }}
+                    onClick={() => {
+                      setPendingGroup(z.key)
+                      setTimeout(() => setSelectedGroup(z.key), 200)
+                    }}
                     onKeyDown={(e) => e.key === 'Enter' && setSelectedGroup(z.key)}
                     style={{
                       top: `${z.top}%`, left: `${z.left}%`,
