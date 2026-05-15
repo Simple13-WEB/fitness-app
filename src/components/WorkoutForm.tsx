@@ -54,8 +54,8 @@ export default function WorkoutForm({ exercise, onSaved, onBack }: Props) {
 
   return (
     <div className="flex flex-col h-full">
-      <button onClick={onBack} className="self-start text-brand text-[13px] mb-1">
-        ← 返回
+      <button onClick={onBack} className="self-start py-2 px-4 bg-brand text-white rounded-lg font-bold text-[14px] mb-2">
+        &lt; 重新选择动作
       </button>
 
       {/* 1. 动作名称 */}
@@ -143,12 +143,62 @@ export default function WorkoutForm({ exercise, onSaved, onBack }: Props) {
           </div>
         )}
 
-        {/* 7. 体感备注 */}
+        {/* 7. 体感备注（弹窗输入） */}
         <div>
           <label className="block text-[11px] text-text-tertiary mb-0.5">体感备注</label>
-          <input type="text" value={notes} onChange={e => setNotes(e.target.value)}
-            placeholder="感受、动作质量等..." className="w-full px-2 py-1.5 rounded-lg bg-surface-card border border-surface-muted text-text-primary text-[13px] focus:outline-none focus:border-brand" />
+          <button
+            type="button"
+            onClick={() => {
+              const dialog = document.getElementById('notes-dialog') as HTMLDialogElement | null
+              dialog?.showModal()
+            }}
+            className="w-full px-2 py-1.5 rounded-lg bg-surface-card border border-surface-muted text-text-primary text-[13px] text-left min-h-[38px] flex items-center">
+            {notes || <span className="text-text-disabled">点击添加备注...</span>}
+          </button>
         </div>
+
+        {/* 体感备注弹窗 */}
+        <dialog id="notes-dialog"
+          className="rounded-2xl p-0 m-auto bg-surface-card text-text-primary backdrop:bg-black/40"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              (e.currentTarget as HTMLDialogElement).close()
+            }
+          }}>
+          <div className="p-5 w-[90vw] max-w-sm">
+            <h4 className="text-[15px] font-bold mb-3">体感备注</h4>
+            <textarea
+              id="notes-textarea"
+              defaultValue={notes}
+              rows={4}
+              className="w-full px-3 py-2 rounded-xl bg-surface-subtle border border-surface-muted text-[14px] text-text-primary focus:outline-none focus:border-brand resize-none"
+              placeholder="感受、动作质量等..."
+              autoFocus
+            />
+            <div className="flex gap-2 mt-3">
+              <button
+                type="button"
+                onClick={() => {
+                  const dialog = document.getElementById('notes-dialog') as HTMLDialogElement | null
+                  dialog?.close()
+                }}
+                className="flex-1 py-2.5 rounded-xl bg-surface-muted text-text-secondary text-[14px] font-bold">
+                取消
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  const textarea = document.getElementById('notes-textarea') as HTMLTextAreaElement | null
+                  if (textarea) setNotes(textarea.value)
+                  const dialog = document.getElementById('notes-dialog') as HTMLDialogElement | null
+                  dialog?.close()
+                }}
+                className="flex-1 py-2.5 rounded-xl bg-brand text-white text-[14px] font-bold">
+                确定
+              </button>
+            </div>
+          </div>
+        </dialog>
 
         {/* 8. 记录打卡 */}
         <button type="submit" disabled={saving}

@@ -1,10 +1,15 @@
 import { Component } from 'react'
 import { HashRouter, Routes, Route } from 'react-router-dom'
+import { StatusBar, Style } from '@capacitor/status-bar'
 import { UserProvider } from './context/UserContext'
 import BottomNav from './components/BottomNav'
 import Dashboard from './pages/Dashboard'
 import WorkoutPage from './pages/Workout'
 import MyPage from './pages/My'
+
+// Set status bar to light style so icons are dark (visible on white background)
+StatusBar.setStyle({ style: Style.Dark }).catch(() => {})
+StatusBar.setBackgroundColor({ color: '#FFFFFF' }).catch(() => {})
 
 class ErrorBoundary extends Component<
   { children: React.ReactNode },

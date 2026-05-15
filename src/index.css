@@ -9,6 +9,7 @@
 body {
   @apply bg-surface-page text-text-primary antialiased;
   overscroll-behavior: none;
+  padding-top: env(safe-area-inset-top);
 }
 
 input[type="number"]::-webkit-inner-spin-button,

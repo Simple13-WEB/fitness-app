@@ -46,6 +46,7 @@ export default function WorkoutPage() {
     setRefreshKey(k => k + 1)
     setSelectedExercise(null)
     setSelectorGroup(undefined)
+    setShowSelector(true)
   }
 
   function handleBack() {
