@@ -62,7 +62,7 @@ export default function ExerciseSelector({ onSelect, onClose, defaultGroup }: Pr
 
   return (
     <div className="fixed inset-0 bg-black/20 z-50 flex items-end sm:items-center justify-center">
-      <div className="bg-surface-card rounded-t-2xl sm:rounded-2xl w-full sm:max-w-md max-h-[85vh] flex flex-col anim-slide-up shadow-[0_4px_12px_rgba(0,0,0,0.08)]">
+      <div className="bg-surface-card rounded-t-2xl sm:rounded-2xl w-full sm:max-w-md max-h-[90vh] flex flex-col anim-slide-up shadow-[0_4px_12px_rgba(0,0,0,0.08)]">
         {/* Header with back button - sticky at top */}
         <div className="sticky top-0 z-10 bg-surface-card flex items-center gap-2 px-4 py-4 border-b border-surface-muted">
           <button

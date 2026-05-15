@@ -38,7 +38,7 @@ export default function WorkoutForm({ exercise, onSaved, onBack }: Props) {
       category: exercise.category,
       weight: weight ? Number(weight) : undefined,
       reps: reps ? Number(reps) : undefined,
-      sets: sets ? Number(sets) : undefined,
+      sets: isCardio ? undefined : (sets ? Number(sets) : undefined),
       distance: distance ? Number(distance) : undefined,
       time: time ? Number(time) : undefined,
       floors: floors ? Number(floors) : undefined,

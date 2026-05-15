@@ -90,7 +90,7 @@ export default function WorkoutPage() {
 
   return (
     <div className="pb-24 min-h-screen bg-surface-page">
-      <header className="bg-surface-card px-6 py-4">
+      <header className="bg-surface-card px-6 pt-6 pb-4">
         <h1 className="text-[18px] font-bold text-text-primary">健身打卡</h1>
         <p className="text-[13px] text-text-tertiary mt-0.5">选择动作，记录你的每一次训练</p>
 

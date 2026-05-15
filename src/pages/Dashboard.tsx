@@ -72,7 +72,7 @@ export default function Dashboard() {
               <ClipboardList className="size-4 text-brand" />
             </div>
             <div className="text-left">
-              <p className="text-[14px] font-bold text-text-primary">记录身体数据</p>
+              <p className="text-[13px] font-bold text-text-primary">记录身体数据</p>
               <p className="text-[11px] text-text-tertiary">体重、围度等</p>
             </div>
           </button>
@@ -82,7 +82,7 @@ export default function Dashboard() {
               <Dumbbell className="size-4 text-brand" />
             </div>
             <div className="text-left">
-              <p className="text-[14px] font-bold text-text-primary">开始健身打卡</p>
+              <p className="text-[13px] font-bold text-text-primary">开始健身打卡</p>
               <p className="text-[11px] text-text-tertiary">选择动作记录</p>
             </div>
           </button>
