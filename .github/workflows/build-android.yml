@@ -28,7 +28,10 @@ jobs:
 
       - name: Setup Android SDK
         run: |
-          yes | $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager "platforms;android-34" "build-tools;34.0.0" || true
+          echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT"
+          ls $ANDROID_SDK_ROOT/platforms/ 2>/dev/null || echo "No platforms dir"
+          ls $ANDROID_SDK_ROOT/cmdline-tools/ 2>/dev/null || echo "No cmdline-tools"
+          $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --list 2>/dev/null | head -5 || echo "sdkmanager not found"
 
       - name: Install dependencies
         run: npm ci
