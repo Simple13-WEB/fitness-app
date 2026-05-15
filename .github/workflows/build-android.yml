@@ -28,6 +28,8 @@ jobs:
 
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
+        with:
+          packages: tools platform-tools platforms;android-35 build-tools;35.0.0
 
       - name: Install dependencies
         run: npm ci
@@ -38,25 +40,11 @@ jobs:
       - name: Sync Android
         run: npx cap sync android
 
-      - name: Verify Android project
-        run: |
-          echo "=== Android project files ==="
-          ls -la android/
-          ls -la android/app/
-          echo "=== gradle wrapper ==="
-          cat android/gradle/wrapper/gradle-wrapper.properties
-          echo "=== variables ==="
-          cat android/variables.gradle
-
       - name: Build Debug APK
         run: |
           cd android
           chmod +x gradlew
-          # First just check gradle version
-          ./gradlew --version || true
-          echo "=== Now running assembleDebug ==="
           ./gradlew assembleDebug --stacktrace 2>&1
-          echo "=== Exit code: $? ==="
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
