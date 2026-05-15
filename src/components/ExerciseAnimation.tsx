@@ -17,16 +17,18 @@ export default function ExerciseAnimation({ exercise, size = 'lg' }: Props) {
   ]
 
   // Auto-carousel: cycle between frames at 500ms intervals
+  // Dependencies include frames so effect re-runs when images load asynchronously
   useEffect(() => {
+    setFrame(0) // reset to first frame when frames change
     if (frames.length <= 1) return
     const timer = setInterval(() => setFrame(f => (f + 1) % frames.length), 500)
     return () => clearInterval(timer)
-  }, [frames.length])
+  }, [frames])
 
   const wrap = (cls: string) => {
     const s = {
       sm: 'w-12 h-16',
-      md: 'w-36 h-64',
+      md: 'w-full h-full',
       lg: 'w-full aspect-[2/3] max-h-[320px]',
     }[size]
     return `${s} mx-auto relative`

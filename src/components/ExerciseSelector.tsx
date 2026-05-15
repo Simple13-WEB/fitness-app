@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import { MUSCLE_GROUPS, type MuscleGroup } from '../types'
 import { getExercisesByGroup } from '../data/exercises'
 import type { Exercise } from '../types'
 import MuscleHighlight from './MuscleHighlight'
+import ExerciseAnimation from './ExerciseAnimation'
 import { X, ChevronLeft, ChevronRight } from 'lucide-react'
 
 interface Props {
@@ -11,64 +12,160 @@ interface Props {
   defaultGroup?: MuscleGroup
 }
 
+const POSTERIOR_GROUPS: MuscleGroup[] = ['back', 'glutes']
+
+const anteriorZones: Array<{ key: MuscleGroup; label: string; top: number; left: number; w: number; h: number }> = [
+  { key: 'chest',    label: '胸',    top: 22, left: 20, w: 60, h: 20 },
+  { key: 'abs',      label: '腹',    top: 40, left: 22, w: 56, h: 20 },
+  { key: 'legs',     label: '腿',    top: 60, left: 16, w: 68, h: 36 },
+  { key: 'shoulder', label: '肩',   top: 18, left: 6,  w: 24, h: 18 },
+  { key: 'arms',     label: '手臂',  top: 28, left: 2,  w: 20, h: 26 },
+]
+const posteriorZones: Array<{ key: MuscleGroup; label: string; top: number; left: number; w: number; h: number }> = [
+  { key: 'back',    label: '背',   top: 22, left: 18, w: 64, h: 24 },
+  { key: 'glutes',  label: '臀',   top: 44, left: 20, w: 60, h: 16 },
+  { key: 'shoulder', label: '肩',  top: 16, left: 8,  w: 24, h: 18 },
+  { key: 'arms',    label: '手臂',  top: 28, left: 2,  w: 20, h: 26 },
+]
+
+// ── Single card navigator ─────────────────────────────────────────────
+function ExerciseCarousel({ exercises, onSelect }: { exercises: Exercise[]; onSelect: (ex: Exercise) => void }) {
+  const [activeIdx, setActiveIdx] = useState(0)
+
+  const prev = useCallback(() => {
+    setActiveIdx(i => Math.max(0, i - 1))
+  }, [])
+
+  const next = useCallback(() => {
+    setActiveIdx(i => Math.min(exercises.length - 1, i + 1))
+  }, [exercises.length])
+
+  const ex = exercises[activeIdx]
+
+  return (
+    <div className="flex items-center gap-3 px-4 py-2 h-full">
+      {/* Prev button */}
+      <button
+        onClick={prev}
+        disabled={activeIdx === 0}
+        className="flex-shrink-0 w-10 h-10 rounded-full bg-surface-muted flex items-center justify-center disabled:opacity-30"
+      >
+        <ChevronLeft size={20} className="text-text-primary" />
+      </button>
+
+      {/* Center card */}
+      <button
+        onClick={() => onSelect(ex)}
+        className="flex-1 flex flex-col items-center h-full py-2"
+      >
+        <div className="flex-1 w-full rounded-2xl overflow-hidden bg-surface-subtle">
+          <ExerciseAnimation exercise={ex} size="lg" />
+        </div>
+        <div className="py-2 text-center">
+          <p className="text-[13px] font-bold text-text-primary leading-tight">{ex.name}</p>
+        </div>
+      </button>
+
+      {/* Next button */}
+      <button
+        onClick={next}
+        disabled={activeIdx === exercises.length - 1}
+        className="flex-shrink-0 w-10 h-10 rounded-full bg-surface-muted flex items-center justify-center disabled:opacity-30"
+      >
+        <ChevronRight size={20} className="text-text-primary" />
+      </button>
+    </div>
+  )
+}
+
+// ── Main selector ──────────────────────────────────────────────────
 export default function ExerciseSelector({ onSelect, onClose, defaultGroup }: Props) {
   const [selectedGroup, setSelectedGroup] = useState<MuscleGroup | null>(defaultGroup || null)
+  const [hoveredGroup, setHoveredGroup] = useState<MuscleGroup | null>(null)
 
-  // Step 1: Select muscle group
+  const isPosterior = hoveredGroup ? POSTERIOR_GROUPS.includes(hoveredGroup) : false
+  const showZones = isPosterior ? posteriorZones : anteriorZones
+  const diagramHighlight = hoveredGroup
+
+  // Step 1: body diagram
   if (!selectedGroup) {
     return (
-      <div className="fixed inset-0 bg-black/20 z-50 flex items-start sm:items-center justify-center">
-        <div className="bg-surface-card rounded-t-2xl sm:rounded-2xl w-full sm:max-w-md max-h-[90vh] flex flex-col anim-slide-up shadow-[0_4px_12px_rgba(0,0,0,0.08)] mt-16 sm:mt-0">
+      <div className="fixed inset-0 bg-black/20 z-50 flex items-stretch sm:items-center justify-center">
+        <div className="bg-surface-card rounded-t-2xl sm:rounded-2xl w-full max-w-[430px] min-h-screen flex flex-col anim-slide-up shadow-[0_4px_12px_rgba(0,0,0,0.08)]">
           <div className="flex items-center justify-between px-6 py-4 border-b border-surface-muted">
             <h3 className="text-[18px] font-bold text-text-primary">选择训练部位</h3>
             <button onClick={onClose} className="p-1.5 hover:bg-surface-muted rounded-full">
               <X className="size-[18px] text-text-tertiary" />
             </button>
           </div>
-          <div className="flex-1 overflow-y-auto py-2">
-            {MUSCLE_GROUPS.map(group => {
-              const count = getExercisesByGroup(group.key).length
-              return (
+          <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
+
+            {/* Quick-select buttons ABOVE the body diagram */}
+            <div className="flex flex-wrap gap-2 justify-center">
+              {MUSCLE_GROUPS.map(group => (
                 <button
                   key={group.key}
+                  type="button"
                   onClick={() => setSelectedGroup(group.key)}
-                  className="w-full flex items-center justify-between px-6 py-4 hover:bg-surface-subtle transition-colors"
+                  onMouseEnter={() => setHoveredGroup(group.key)}
+                  onMouseLeave={() => setHoveredGroup(null)}
+                  style={{ outline: 'none' }}
+                  className={`px-4 py-2 rounded-full text-[13px] font-bold transition-all focus:outline-none ${
+                    hoveredGroup === group.key
+                      ? 'bg-brand text-white shadow-md scale-105'
+                      : 'bg-surface-subtle text-text-primary hover:bg-surface-muted'
+                  }`}
                 >
-                  <div className="flex items-center gap-3">
-                    <div className="w-[52px] h-[68px]">
-                      <MuscleHighlight muscleGroup={group.key} size={52} />
-                    </div>
-                    <div className="text-left">
-                      <span className="text-[16px] font-bold text-text-primary">{group.label}</span>
-                      <p className="text-[11px] text-text-tertiary mt-0.5">{groupDescs[group.key] || `${count}个动作`}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-[12px] text-text-tertiary">{count}个</span>
-                    <ChevronRight size={16} className="text-text-disabled" />
-                  </div>
+                  {group.label}
                 </button>
-              )
-            })}
+              ))}
+            </div>
+
+            {/* Single body diagram — switches anterior/posterior based on hovered group */}
+            <div className="flex flex-col items-center">
+              <div className="relative" onMouseLeave={() => setHoveredGroup(null)}>
+                <MuscleHighlight
+                  muscleGroup={diagramHighlight as any}
+                  size={140}
+                />
+                {showZones.map(z => (
+                  <div
+                    key={z.key}
+                    role="button"
+                    tabIndex={0}
+                    onMouseEnter={() => setHoveredGroup(z.key)}
+                    onClick={() => setSelectedGroup(z.key)}
+                    onKeyDown={(e) => e.key === 'Enter' && setSelectedGroup(z.key)}
+                    style={{
+                      top: `${z.top}%`, left: `${z.left}%`,
+                      width: `${z.w}%`, height: `${z.h}%`,
+                      transform: 'translate(-50%, -50%)',
+                      background: 'transparent',
+                      outline: 'none',
+                    }}
+                  />
+                ))}
+              </div>
+              <span className="text-[11px] text-text-disabled mt-1">
+                {isPosterior ? '背面' : '正面'}
+              </span>
+            </div>
+
           </div>
         </div>
       </div>
     )
   }
 
-  // Step 2: Exercise list for selected group
+  // Step 2: Horizontal carousel — modal constrained to app width
   const exercises = getExercisesByGroup(selectedGroup)
   const groupLabel = MUSCLE_GROUPS.find(g => g.key === selectedGroup)?.label || selectedGroup
 
   return (
-    <div className="fixed inset-0 bg-black/20 z-50 flex items-start sm:items-center justify-center">
-      <div className="bg-surface-card rounded-t-2xl sm:rounded-2xl w-full sm:max-w-md max-h-[90vh] flex flex-col anim-slide-up shadow-[0_4px_12px_rgba(0,0,0,0.08)] mt-16 sm:mt-0">
-        {/* Header with back button - sticky at top */}
-        <div className="sticky top-0 z-10 bg-surface-card flex items-center gap-2 px-4 py-4 border-b border-surface-muted">
-          <button
-            onClick={() => setSelectedGroup(null)}
-            className="p-1.5 hover:bg-surface-muted rounded-full flex-shrink-0"
-          >
+    <div className="fixed inset-0 z-50 flex items-stretch sm:items-center justify-center bg-black/20">
+      <div className="bg-surface-card rounded-t-2xl sm:rounded-2xl w-full max-w-[430px] min-h-screen flex flex-col anim-slide-up shadow-[0_4px_12px_rgba(0,0,0,0.08)]">
+        <div className="flex items-center gap-2 px-4 py-4 border-b border-surface-muted">
+          <button onClick={() => setSelectedGroup(null)} className="p-1.5 hover:bg-surface-muted rounded-full flex-shrink-0">
             <ChevronLeft size={18} className="text-text-primary" />
           </button>
           <h3 className="text-[16px] font-bold text-text-primary flex-1">{groupLabel} · {exercises.length}个动作</h3>
@@ -76,35 +173,10 @@ export default function ExerciseSelector({ onSelect, onClose, defaultGroup }: Pr
             <X className="size-[18px] text-text-tertiary" />
           </button>
         </div>
-
-        {/* Exercise list */}
-        <div className="flex-1 overflow-y-auto px-4 py-3 space-y-2">
-          {exercises.map(ex => (
-            <button
-              key={ex.id}
-              onClick={() => onSelect(ex)}
-              className="w-full bg-surface-subtle rounded-2xl p-3 flex items-center gap-3 hover:bg-surface-muted transition-colors"
-            >
-              <div className="text-left flex-1 min-w-0">
-                <p className="text-[14px] font-bold text-text-primary">{ex.name}</p>
-                <p className="text-[11px] text-text-tertiary line-clamp-1">{ex.description}</p>
-              </div>
-              <ChevronRight size={16} className="text-text-disabled flex-shrink-0" />
-            </button>
-          ))}
+        <div className="flex-1 overflow-hidden min-h-0 flex flex-col">
+          <ExerciseCarousel exercises={exercises} onSelect={onSelect} />
         </div>
       </div>
     </div>
   )
-}
-
-const groupDescs: Record<string, string> = {
-  chest: '卧推 · 飞鸟 · 夹胸',
-  shoulder: '推举 · 侧平举 · 前平举',
-  back: '引体 · 划船 · 下拉',
-  abs: '卷腹 · 举腿 · 平板支撑',
-  legs: '深蹲 · 腿举 · 箭步蹲',
-  glutes: '臀推 · 硬拉 · 后踢腿',
-  arms: '弯举 · 臂屈伸 · 下压',
-  cardio: '慢跑 · 跳绳 · 游泳 · 爬楼',
 }
