@@ -17,8 +17,8 @@ export default function ExerciseSelector({ onSelect, onClose, defaultGroup }: Pr
   // Step 1: Select muscle group
   if (!selectedGroup) {
     return (
-      <div className="fixed inset-0 bg-black/20 z-50 flex items-end sm:items-center justify-center">
-        <div className="bg-surface-card rounded-t-2xl sm:rounded-2xl w-full sm:max-w-md max-h-[70vh] flex flex-col anim-slide-up shadow-[0_4px_12px_rgba(0,0,0,0.08)]">
+      <div className="fixed inset-0 bg-black/20 z-50 flex items-start sm:items-center justify-center">
+        <div className="bg-surface-card rounded-t-2xl sm:rounded-2xl w-full sm:max-w-md max-h-[90vh] flex flex-col anim-slide-up shadow-[0_4px_12px_rgba(0,0,0,0.08)] mt-16 sm:mt-0">
           <div className="flex items-center justify-between px-6 py-4 border-b border-surface-muted">
             <h3 className="text-[18px] font-bold text-text-primary">选择训练部位</h3>
             <button onClick={onClose} className="p-1.5 hover:bg-surface-muted rounded-full">
@@ -61,8 +61,8 @@ export default function ExerciseSelector({ onSelect, onClose, defaultGroup }: Pr
   const groupLabel = MUSCLE_GROUPS.find(g => g.key === selectedGroup)?.label || selectedGroup
 
   return (
-    <div className="fixed inset-0 bg-black/20 z-50 flex items-end sm:items-center justify-center">
-      <div className="bg-surface-card rounded-t-2xl sm:rounded-2xl w-full sm:max-w-md max-h-[90vh] flex flex-col anim-slide-up shadow-[0_4px_12px_rgba(0,0,0,0.08)]">
+    <div className="fixed inset-0 bg-black/20 z-50 flex items-start sm:items-center justify-center">
+      <div className="bg-surface-card rounded-t-2xl sm:rounded-2xl w-full sm:max-w-md max-h-[90vh] flex flex-col anim-slide-up shadow-[0_4px_12px_rgba(0,0,0,0.08)] mt-16 sm:mt-0">
         {/* Header with back button - sticky at top */}
         <div className="sticky top-0 z-10 bg-surface-card flex items-center gap-2 px-4 py-4 border-b border-surface-muted">
           <button
